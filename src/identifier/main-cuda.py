@@ -52,7 +52,7 @@ tHeight = targetMask.height
 outputImage = np.zeros((tHeight, tWidth), dtype = np.uint8)
 device_outputImage = cuda.to_device(outputImage)
 
-mineral_dists = np.full((tHeight, tWidth), 2147483647, dtype = np.int32)
+mineral_dists = np.full((tHeight, tWidth), 2147483647, dtype = np.uint32)
 d_mineral_dists = cuda.to_device(mineral_dists)
 #for each pixel in mask:
 ##if mask pixel is not zero:
@@ -76,7 +76,7 @@ def calc_dist(maskImage, bufImage, elemImage, testValue):
 
 
 for vector in calibratedVectors:
-	bufImage = np.zeros((tHeight, tWidth), dtype = np.int32)
+	bufImage = np.zeros((tHeight, tWidth), dtype = np.uint32)
 	vector["buf"] = bufImage
 	vector["dbuf"] = cuda.to_device(bufImage)
 	for element in calibration:
