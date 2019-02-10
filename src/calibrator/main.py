@@ -36,11 +36,16 @@ height = 0
 elements = standards_dict["elements"]
 minerals = standards_dict["minerals"]
 
+element_slopes = {}
+element_samples = {}
+
 element_dimages = {}
 
 for element in elements:
 	img = Image.open(elements[element])
 	element_dimages[element] = cuda.to_device(img)
+	element_slopes[element] = 0
+	element_samples[element] = 0
 	width = img.width
 	height = img.height
 
@@ -55,9 +60,18 @@ for mineral in minerals:
 	maskpixels = sum_reduce(np.ravel(device_maskBuf))
 	minerals[mineral]["intensity"] = {}
 	print(mineral)
-	for element in elements:
-		map_mask(element_dimages[element], maskDImage, device_maskBuf)
-		elemTotalIntensity = sum_reduce(np.ravel(device_maskBuf))
-		elemAverageIntensity = elemTotalIntensity / maskpixels
-		minerals[mineral]["intensity"][element] = elemAverageIntensity
-		print("\t" + element + ": " + str(elemAverageIntensity))
+	mineralElements = minerals[mineral]["elements"]
+	for element in mineralElements:
+		if element in elements.keys():
+			expectedWeight = mineralElements[element]
+			map_mask(element_dimages[element], maskDImage, device_maskBuf)
+			elemTotalIntensity = sum_reduce(np.ravel(device_maskBuf))
+			elemAverageIntensity = elemTotalIntensity / maskpixels
+			minerals[mineral]["intensity"][element] = elemAverageIntensity
+			print("\t" + element + ": " + str(elemAverageIntensity))
+			elemSlope = elemAverageIntensity / expectedWeight
+			element_slopes[element] = (element_slopes[element] * element_samples[element] + elemSlope) / (element_samples[element] + 1)
+			element_samples[element] += 1
+
+with open("calibration.json", "w") as outfile:
+	json.dump(element_slopes, outfile)
