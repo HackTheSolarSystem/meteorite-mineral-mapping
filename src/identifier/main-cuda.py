@@ -1,29 +1,30 @@
+from numba import cuda
+from numba import *
 import numpy as np
 from PIL import Image, ImageDraw
 import json
 import sys
-from scipy.misc import imread
 
 targetObject = sys.argv[1]
 
 #load calibration JSON from standard
-with open("calibration.json", 'r') as f:
+with open("standard/calibration.json", 'r') as f:
 	calibration = json.load(f)
 #load target minerals JSON
 with open("test-minerals.json") as f:
 	testMinerals = json.load(f)
 
+
 #multiply each element weight in target minerals by element scalars in calibration json
 #store as calibratedWeights
-
 calibratedVectors = []
-mineralIndex = 0
 
+mineralIndex = 0
 for mineral in testMinerals:
 	mineralIndex += 1
 	testMineral = testMinerals[mineral]
 	for vector in testMineral["elements"]:
-		calibratedVector = { "name" : mineral, "index" : mineralIndex }
+		calibratedVector = { "name" : mineral, "index" : mineralIndex}
 		for element in calibration:
 			if element in vector.keys():
 				calibratedVector[element] = calibration[element] * vector[element]
@@ -31,24 +32,26 @@ for mineral in testMinerals:
 				calibratedVector[element] = 0
 		calibratedVectors.append(calibratedVector)
 
-# for each element name in calibration:
-# load image of form targetname/targetname_32bt_elementname.tif
+#for each element name in calibration:
+##load image of form targetname/targetname_32bt_elementname.tif
 element_scans = {}
 for element in calibration:
-	img = imread(targetObject + "/" + targetObject + "_32bt_" + element + ".tif")
-	element_scans[element] = img
+	img = Image.open(targetObject + "/" + targetObject + "_32bt_" + element + ".tif")
+	element_scans[element] = cuda.to_device(img)
 
 
-# load targetname/targetname_mask.tif
-targetMask = imread(targetObject + "/" + targetObject + "_mask.tif")
+#load targetname/targetname_mask.tif
+targetMask = Image.open(targetObject + "/" + targetObject + "_mask.tif")
+dTargetMask = cuda.to_device(targetMask)
 
-# create output image same size as mask, initialized to zero, formatted as uint8
-tWidth = len(targetMask[0])
-tHeight = len(targetMask)
+#create output image same size as mask, initialized to zero, formatted as uint8
+tWidth = targetMask.width
+tHeight = targetMask.height
 outputImage = np.zeros((tHeight, tWidth), dtype = np.uint8)
+device_outputImage = cuda.to_device(outputImage)
 
 mineral_dists = np.full((tHeight, tWidth), 2147483647, dtype = np.int32)
-
+d_mineral_dists = cuda.to_device(mineral_dists)
 #for each pixel in mask:
 ##if mask pixel is not zero:
 ###closestDist=maxval
@@ -59,6 +62,7 @@ mineral_dists = np.full((tHeight, tWidth), 2147483647, dtype = np.int32)
 ###set ouput pixel to closestIndex
 ###set confidence output pixel to closestDist
 
+@cuda.jit
 def calc_dist(maskImage, bufImage, elemImage, testValue):
 	for x in range(0, tWidth):
 		for y in range(0, tHeight):
@@ -72,10 +76,13 @@ def calc_dist(maskImage, bufImage, elemImage, testValue):
 for vector in calibratedVectors:
 	bufImage = np.zeros((tHeight, tWidth), dtype = np.int32)
 	vector["buf"] = bufImage
-	vector["dbuf"] = bufImage
+	vector["dbuf"] = cuda.to_device(bufImage)
 	for element in calibration:
-		calc_dist(targetMask, vector["dbuf"], element_scans[element], vector[element])
+		calc_dist(dTargetMask, vector["dbuf"], element_scans[element], vector[element])
+	#vector["dbuf"].to_host()
+	#Image.fromarray(vector["buf"]).save("test/" + vector["name"] + "_" + targetObject + ".tif")
 
+@cuda.jit
 def compare_dist(maskImage, indexImage, distImage, cmpIndex, cmpDists):
 	for x in range(0, tWidth):
 		for y in range(0, tHeight):
@@ -85,7 +92,11 @@ def compare_dist(maskImage, indexImage, distImage, cmpIndex, cmpDists):
 					distImage[y,x] = cmpDists[y,x]
 
 for vector in calibratedVectors:
-	compare_dist(targetMask, outputImage, mineral_dists, vector["index"], vector["dbuf"])
+	compare_dist(dTargetMask, device_outputImage, d_mineral_dists, vector["index"], vector["dbuf"])
+
+device_outputImage.to_host()
+
+
 
 mapImage = Image.new("P", (tWidth, tHeight), 0)
 mapImage.putpalette([
@@ -107,6 +118,8 @@ for x in range(0, tWidth):
 
 mapImage.save(targetObject + "_mineralmap.gif")
 
+
+@cuda.jit
 def map_mask(inImage, maskImage, outImage):
 	for x in range(0, tWidth):
 		for y in range(0, tHeight):
@@ -115,6 +128,7 @@ def map_mask(inImage, maskImage, outImage):
 			else:
 				outImage[y,x] = 0
 
-map_mask(mineral_dists, targetMask, mineral_dists)
+map_mask(d_mineral_dists, dTargetMask, d_mineral_dists)
 
+d_mineral_dists.to_host()
 Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")

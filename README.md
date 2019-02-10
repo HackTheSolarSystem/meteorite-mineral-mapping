@@ -4,16 +4,24 @@ HackTheSolarSystem [challenge](https://github.com/amnh/HackTheSolarSystem/wiki/M
 
 ## Team
 
-- [Xiaoyun Yang](https://github.com/xiaoyunyang)
 - [Clyde Shaffer](https://github.com/clydeshaffer)
+- [Xiaoyun Yang](https://github.com/xiaoyunyang)
 
 ## Solution
 
-Calibration
+```
+yarn calibrate
+yarn identify-obj1
+yarn identify-obj2
+```
 
-```
-yarn calibrator
-```
+`yarn calibrate` executes the [calibrator](/src/calibrator/main.py), which creates [calibration.json](/dataset/calibration.json).
+
+calibration.json contains the conversion factor that correlates intensity and weight percent for each element.
+
+The conversion factors are generated using the [standards](/dataset/standard).
+
+`yarn identify-obj1` executes the [identifier](/src/identifier/main.py), which creates [obj1_mineralmap.jpg](/dataset/obj1_mineralmap.gif), [obj1_confidence.jpg](/dataset/obj1_confidence.tif).
 
 ## Approach
 
