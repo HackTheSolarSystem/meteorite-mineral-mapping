@@ -56,9 +56,10 @@ git clone https://github.com/HackTheSolarSystem/meteorite-mineral-mapping.git
 To run the project
 
 1. Install python
-    - OPTIONAL: if you want to run the version of the programs which utilizes parallel processing on the GPU, you also need to install [numba](https://pypi.org/project/numba/), [cudatoolkit](https://developer.nvidia.com/cuda-toolkit), and [pyculib](https://github.com/numba/pyculib/blob/master/docs/quickstart.md)
+    - OPTIONAL: if you want to run the version of the programs which utilizes parallel processing on the GPU, you also need to install [numba](https://pypi.org/project/numba/), [cudatoolkit](https://developer.nvidia.com/cuda-toolkit), and [pyculib](https://github.com/numba/pyculib/blob/master/docs/quickstart.md). Using the CUDA versions of the program will result in roughly a 10x faster execution.
 2. Install [yarn](https://www.google.com/search?q=yarn+install&oq=yarn+install&aqs=chrome..69i57j0l5.1257j0j7&sourceid=chrome&ie=UTF-8)
 3. Execute the program for creating the calibration file: `yarn calibrate`
     - NOTE: `yarn calibrate` executes the [calibrator](/src/calibrator/main.py), which creates [calibration.json](/dataset/calibration.json). This file contains the conversion factor that correlates intensity and weight percent for each element.
 4. After calibration, identify minerals in obj1 obj2 using `yarn identify-obj1` and `yarn identify-obj2`.
     - NOTE: the bash commands which map to the yarn commands are defined in the scripts section of [package.json](package.json). To identify additional objects, ensure to create a new directory in [dataset](/dataset) and name it `{OBJET_NAME}`, then add a script to package.json which maps "identify-`{OBJECT_NAME}`" to "cd dataset && python ../src/identifier/main.py `{OBJECT_NAME}`".
+
