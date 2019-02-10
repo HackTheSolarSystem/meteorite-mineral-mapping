@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "HackTheSolarSystem [challenge](https://github.com/amnh/HackTheSolarSystem/wiki/Meteorite-Mineral-Mapping)",
   "scripts": {
-    "calibrator": "python src/calibrator/main.py"
+    "calibrator": "cd dataset/standard && python ../../src/calibrator/main.py"
   },
   "repository": {
     "type": "git",

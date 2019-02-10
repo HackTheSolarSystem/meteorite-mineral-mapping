@@ -7,6 +7,14 @@ HackTheSolarSystem [challenge](https://github.com/amnh/HackTheSolarSystem/wiki/M
 - [Xiaoyun Yang](https://github.com/xiaoyunyang)
 - [Clyde Shaffer](https://github.com/clydeshaffer)
 
+## Solution
+
+Calibration
+
+```
+yarn calibrator
+```
+
 ## Approach
 
 ### Step 1. Calibration
@@ -28,3 +36,9 @@ These are the minerals we are interested in finding in our samples.
 - Pentlandite	(FeNiS)
 - Olivine (Fe,Mg)2SiO4
 - Pyroxene (Fe,Mg)SiO
+
+
+# Stack
+
+- python
+- [Pillow](https://pillow.readthedocs.io/en/stable/) (PIL) for processing images in python.
