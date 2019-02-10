@@ -75,23 +75,30 @@ for vector in calibratedVectors:
 mapImage = Image.new("P", (tWidth, tHeight), 0)
 mapImage.putpalette(constants.pallette)
 
+mineralPixelCounts = {}
+for mineral in mineralNames:
+	mineralPixelCounts[mineral] = 0
+
 d = ImageDraw.ImageDraw(mapImage)
 for x in range(0, tWidth):
 		for y in range(0, tHeight):
 			color = outputImage[y,x]
 			d.point((x,y), fill=int(color))
+			if color != 0:
+				mineralPixelCounts[mineralNames[color-1]] += 1
 
 mapImage.save(targetObject + "_mineralmap.gif")
 
-utils.map_mask(targetMask, mineral_dists, mineral_dists)
+with open(targetObject + "_mineralcounts.json", "w") as outfile:
+	json.dump(mineralPixelCounts, outfile)
 
 Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")
 
-# legendImage = Image.new("P", (tWidth, tHeight), 0)
+# legendImage = Image.new("P", (256, 256), 0)
 # legendImage.putpalette(constants.pallette)
 # dl = ImageDraw.ImageDraw(legendImage)
 # for i in range(0, 7):
-# 	dl.text((32, 32 * i), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf", size=18))
-# 	dl.rectangle([(8, 32*i),(24, 32*i + 16)], fill=i+1)
-
-# legendImage.save(targetObject + "_legend.gif")
+# 	dl.text((32, 32 * i + 4), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
+# 	(mineralnumSize, _) = dl.textsize(str(mineralPixelCounts[mineralNames[i]]) + "px", font=ImageFont.truetype(font="arial.ttf",size=18))
+# 	dl.text((248 - mineralnumSize	, 32 * i + 4), str(mineralPixelCounts[mineralNames[i]]) + "px", fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
+# 	dl.rectangle([(8, 32*i + 4),(24, 32*i + 20)], fill=i+1)
