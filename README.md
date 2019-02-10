@@ -37,12 +37,8 @@ These are the minerals we are interested in finding in our samples.
 - [Olivine](http://webmineral.com/data/Olivine.shtml#.XF-86s9Ki-w) (Fe,Mg)2SiO4
 - Pyroxene (Fe,Mg)SiO
 
-
-# Stack
+# Dependencies
 
 - python
 - [Pillow](https://pillow.readthedocs.io/en/stable/) (PIL) for processing images in python.
-
-# Resource
-
-- [Molecular weight calculator](https://www.webqc.org/mmcalc.php)
+- [numba](https://pypi.org/project/numba/) (optional)
