@@ -29,12 +29,12 @@ We are given a mask for each standard. We are also given 10 elements gray scale 
 
 These are the minerals we are interested in finding in our samples.
 
-- Kamacite (Fe9Ni1)
-- Taenite (Fe,Ni)
-- Millerite (NiS)
-- Troilite (FeS)
-- Pentlandite	(FeNiS)
-- Olivine (Fe,Mg)2SiO4
+- [Kamacite](http://webmineral.com/data/Kamacite.shtml#.XF-73c9Ki-w) (Fe9Ni1)
+- [Taenite](http://webmineral.com/data/Tetrataenite.shtml#.XF-4l89Ki-w) (Fe,Ni)
+- [Millerite](http://webmineral.com/data/Millerite.shtml#.XF-4rs9Ki-w) (NiS)
+- [Troilite](http://webmineral.com/data/Troilite.shtml#.XF-5MM9Ki-w) (FeS)
+- [Pentlandite](http://webmineral.com/data/Pentlandite.shtml#.XF-6aM9Ki-w)	(FeNiS)
+- [Olivine](http://webmineral.com/data/Olivine.shtml#.XF-86s9Ki-w) (Fe,Mg)2SiO4
 - Pyroxene (Fe,Mg)SiO
 
 
@@ -42,3 +42,7 @@ These are the minerals we are interested in finding in our samples.
 
 - python
 - [Pillow](https://pillow.readthedocs.io/en/stable/) (PIL) for processing images in python.
+
+# Resource
+
+- [Molecular weight calculator](https://www.webqc.org/mmcalc.php)
