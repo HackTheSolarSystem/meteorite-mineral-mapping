@@ -1,0 +1,18 @@
+{
+  "name": "meteorite-mineral-mapping",
+  "version": "1.0.0",
+  "description": "HackTheSolarSystem [challenge](https://github.com/amnh/HackTheSolarSystem/wiki/Meteorite-Mineral-Mapping)",
+  "scripts": {
+    "calibrator": "python src/calibrator/main.py"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HackTheSolarSystem/meteorite-mineral-mapping.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HackTheSolarSystem/meteorite-mineral-mapping/issues"
+  },
+  "homepage": "https://github.com/HackTheSolarSystem/meteorite-mineral-mapping#readme"
+}
