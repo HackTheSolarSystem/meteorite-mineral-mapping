@@ -40,8 +40,8 @@
     },
     "millerite": {
       "elements": {
-        "Ni": 64.67,
-        "S": 35.33
+        "Ni": 64.6699,
+        "S": 35.3301
       },
       "maskFile": "mask_millerite_NiS.tif"
     },
