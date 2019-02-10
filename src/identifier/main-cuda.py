@@ -1,14 +1,14 @@
 from numba import cuda
 from numba import *
 import numpy as np
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageFont
 import json
 import sys
 
 targetObject = sys.argv[1]
 
 #load calibration JSON from standard
-with open("standard/calibration.json", 'r') as f:
+with open("calibration.json", 'r') as f:
 	calibration = json.load(f)
 #load target minerals JSON
 with open("test-minerals.json") as f:
@@ -18,11 +18,13 @@ with open("test-minerals.json") as f:
 #multiply each element weight in target minerals by element scalars in calibration json
 #store as calibratedWeights
 calibratedVectors = []
+mineralNames = []
 
 mineralIndex = 0
 for mineral in testMinerals:
 	mineralIndex += 1
 	testMineral = testMinerals[mineral]
+	mineralNames.append(mineral)
 	for vector in testMineral["elements"]:
 		calibratedVector = { "name" : mineral, "index" : mineralIndex}
 		for element in calibration:
@@ -132,3 +134,22 @@ map_mask(d_mineral_dists, dTargetMask, d_mineral_dists)
 
 d_mineral_dists.to_host()
 Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")
+
+legendImage = Image.new("P", (tWidth, tHeight), 0)
+legendImage.putpalette([
+    0, 0, 0, # black background
+    255, 0, 0, # index 1 is red
+    255, 153, 0, # index 2 is orange
+    255, 255, 0, # index 3 is yellow
+    0, 255, 0, # green
+    0, 0, 255, # blue
+    152, 0, 255, # indigo
+    255, 0, 152, # violet
+    255, 255, 255
+])
+dl = ImageDraw.ImageDraw(legendImage)
+for i in range(0, 7):
+	dl.text((32, 32 * i), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
+	dl.rectangle([(8, 32*i),(24, 32*i + 16)], fill=i+1)
+
+legendImage.save(targetObject + "_legend.gif")
