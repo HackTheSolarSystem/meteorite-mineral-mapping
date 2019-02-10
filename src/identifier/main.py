@@ -117,3 +117,18 @@ for x in range(0, tWidth):
 			d.point((x,y), fill=int(color))
 
 mapImage.save(targetObject + "_mineralmap.gif")
+
+
+@cuda.jit
+def map_mask(inImage, maskImage, outImage):
+	for x in range(0, tWidth):
+		for y in range(0, tHeight):
+			if maskImage[y,x] != 0:
+				outImage[y,x] = inImage[y,x]
+			else:
+				outImage[y,x] = 0
+
+map_mask(d_mineral_dists, dTargetMask, d_mineral_dists)
+
+d_mineral_dists.to_host()
+Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")
