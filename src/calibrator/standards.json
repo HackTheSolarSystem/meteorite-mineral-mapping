@@ -1,0 +1,58 @@
+{
+  "perovskite": {
+    "elements": {
+      "Ti": 35.2258,
+      "Ca": 29.475
+    },
+    "maskFile": "mask_perovskite_CaTiO3.tif"
+  },
+  "iron": {
+    "elements": {
+      "Fe": 100
+    },
+    "maskFile": "mask_iron_Fe.tif"
+  },
+  "magnetite": {
+    "elements": {
+      "Fe": 72.36
+    },
+    "maskFile": "mask_magnetite_Fe3O4.tif"
+  },
+  "troilite": {
+    "elements": {
+      "Fe": 63.53,
+      "S": 36.47
+    },
+    "maskFile": "mask_troilite_FeS.tif"
+  },
+  "millerite": {
+    "elements": {
+      "Ni": 64.67,
+      "S": 35.33
+    },
+    "maskFile": "mask_millerite_NiS.tif"
+  },
+  "nickel": {
+    "elements": {
+      "Ni": 100
+    },
+    "maskFile": "mask_nickel_Ni.tif"
+  },
+  "rutile": {
+    "elements": {
+      "Ti": 59.94
+    },
+    "maskFile": "mask_rutile_TiO2.tif"
+  },
+  "scolv": {
+    "elements": {
+      "Si": 19.08,
+      "Fe": 7.42,
+      "Mg": 29.8,
+      "Mn": 0.11,
+      "Ca": 0.02,
+      "Ni": 0.29
+    },
+    "maskFile": "mask_scolv.tif"
+  }
+}
