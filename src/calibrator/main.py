@@ -2,7 +2,11 @@ import numpy as np
 import json
 from scipy.misc import imread
 
-with open("standard/standards.json", 'r') as f:
+# util
+def get_image_path(filename):
+  return "standard/" + filename
+
+with open(get_image_path("standards.json"), 'r') as f:
 	standards_dict = json.load(f)
 
 elements = standards_dict["elements"]
@@ -10,11 +14,11 @@ minerals = standards_dict["minerals"]
 
 element_slopes = {}
 element_samples = {}
-element_dimages = {}
+element_images = {}
 
 for element in elements:
-  img = imread("standard/"+elements[element])
-  element_dimages[element] = img
+  img = imread(get_image_path(elements[element]))
+  element_images[element] = img
   element_slopes[element] = 0
   element_samples[element] = 0
   width = len(img[0])
@@ -23,7 +27,7 @@ for element in elements:
 maskBuf = np.zeros((height, width), dtype = np.int32)
 
 for mineral in minerals:
-  maskImage = imread("standard/"+minerals[mineral]["maskFile"])
+  maskImage = imread(get_image_path(minerals[mineral]["maskFile"]))
 
   for x in range(0, len(maskImage[0])):
     for y in range(0, len(maskImage)):
@@ -42,15 +46,12 @@ for mineral in minerals:
     if element in elements.keys():
       expectedWeight = mineralElements[element]
       
-      inImage = element_dimages[element]
-      outImage = maskBuf
-      
       for x in range(0, width):
         for y in range(0, height):
           if maskImage[y, x] != 0:
-            outImage[y, x] = inImage[y, x]
+            maskBuf[y, x] = element_images[element][y, x]
           else:
-            outImage[y, x] = 0
+            maskBuf[y, x] = 0
       elemTotalIntensity = reduce((lambda x, y: x + y), np.ravel(maskBuf))
       elemAverageIntensity = elemTotalIntensity / float(maskpixels)
       minerals[mineral]["intensity"][element] = elemAverageIntensity
