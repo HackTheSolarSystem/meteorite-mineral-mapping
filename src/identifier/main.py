@@ -73,7 +73,7 @@ for vector in calibratedVectors:
 	utils.compare_dist(targetMask, outputImage, mineral_dists, vector["index"], vector["dbuf"])
 
 mapImage = Image.new("P", (tWidth, tHeight), 0)
-mapImage.putpalette(constants.pallette)
+mapImage.putpalette(constants.palette)
 
 mineralPixelCounts = {}
 for mineral in mineralNames:

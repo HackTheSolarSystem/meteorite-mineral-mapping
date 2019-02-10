@@ -2,8 +2,10 @@ from numba import cuda
 from numba import *
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+from constants import palette
 import json
 import sys
+import math
 
 targetObject = sys.argv[1]
 
@@ -26,12 +28,18 @@ for mineral in testMinerals:
 	testMineral = testMinerals[mineral]
 	mineralNames.append(mineral)
 	for vector in testMineral["elements"]:
+		vectorSum = 0
+		sqrSum = 0
 		calibratedVector = { "name" : mineral, "index" : mineralIndex}
 		for element in calibration:
 			if element in vector.keys():
 				calibratedVector[element] = calibration[element] * vector[element]
+				vectorSum += calibratedVector[element]
+				sqrSum +=  calibratedVector[element] *  calibratedVector[element]
 			else:
 				calibratedVector[element] = 0
+		calibratedVector["sum"] = vectorSum
+		calibratedVector["sqrSum"] = vectorSum
 		calibratedVectors.append(calibratedVector)
 
 #for each element name in calibration:
@@ -70,7 +78,8 @@ def calc_dist(maskImage, bufImage, elemImage, testValue):
 		for y in range(0, tHeight):
 			if maskImage[y,x] != 0:
 				diff = abs(elemImage[y,x] - testValue)
-				bufImage[y,x] += diff * diff
+				newValue = bufImage[y,x] + (diff * diff)
+				bufImage[y,x] = max(newValue, bufImage[y,x])
 			else:
 				bufImage[y,x] = 0
 
@@ -101,16 +110,7 @@ device_outputImage.to_host()
 
 
 mapImage = Image.new("P", (tWidth, tHeight), 0)
-mapImage.putpalette([
-    0, 0, 0, # black background
-    255, 0, 0, # index 1 is red
-    255, 153, 0, # index 2 is orange
-    255, 255, 0, # index 3 is yellow
-    0, 255, 0, # green
-    0, 0, 255, # blue
-    152, 0, 255, # indigo
-    255, 0, 152 # violet
-])
+mapImage.putpalette(palette)
 
 mineralPixelCounts = {}
 for mineral in mineralNames:
@@ -144,17 +144,7 @@ d_mineral_dists.to_host()
 Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")
 
 legendImage = Image.new("P", (256, 256), 0)
-legendImage.putpalette([
-    0, 0, 0, # black background
-    255, 0, 0, # index 1 is red
-    255, 153, 0, # index 2 is orange
-    255, 255, 0, # index 3 is yellow
-    0, 255, 0, # green
-    0, 0, 255, # blue
-    152, 0, 255, # indigo
-    255, 0, 152, # violet
-    255, 255, 255
-])
+legendImage.putpalette(palette)
 dl = ImageDraw.ImageDraw(legendImage)
 for i in range(0, 7):
 	dl.text((32, 32 * i + 4), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
