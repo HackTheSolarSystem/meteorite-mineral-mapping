@@ -101,13 +101,22 @@ mapImage.putpalette([
     255, 0, 152 # violet
 ])
 
+mineralPixelCounts = {}
+for mineral in mineralNames:
+	mineralPixelCounts[mineral] = 0
+
 d = ImageDraw.ImageDraw(mapImage)
 for x in range(0, tWidth):
 		for y in range(0, tHeight):
 			color = outputImage[y,x]
 			d.point((x,y), fill=int(color))
+			if color != 0:
+				mineralPixelCounts[mineralNames[color-1]] += 1
 
 mapImage.save(targetObject + "_mineralmap.gif")
+
+with open(targetObject + "_mineralcounts.json", "w") as outfile:
+	json.dump(mineralPixelCounts, outfile)
 
 def map_mask(inImage, maskImage, outImage):
 	for x in range(0, tWidth):
@@ -121,7 +130,7 @@ map_mask(mineral_dists, targetMask, mineral_dists)
 
 Image.fromarray(mineral_dists, mode="I").save(targetObject + "_confidence.tif")
 
-legendImage = Image.new("P", (tWidth, tHeight), 0)
+legendImage = Image.new("P", (256, 256), 0)
 legendImage.putpalette([
     0, 0, 0, # black background
     255, 0, 0, # index 1 is red
@@ -135,7 +144,9 @@ legendImage.putpalette([
 ])
 dl = ImageDraw.ImageDraw(legendImage)
 for i in range(0, 7):
-	dl.text((32, 32 * i), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
-	dl.rectangle([(8, 32*i),(24, 32*i + 16)], fill=i+1)
+	dl.text((32, 32 * i + 4), mineralNames[i], fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
+	(mineralnumSize, _) = dl.textsize(str(mineralPixelCounts[mineralNames[i]]) + "px", font=ImageFont.truetype(font="arial.ttf",size=18))
+	dl.text((248 - mineralnumSize	, 32 * i + 4), str(mineralPixelCounts[mineralNames[i]]) + "px", fill=8, font=ImageFont.truetype(font="arial.ttf",size=18))
+	dl.rectangle([(8, 32*i + 4),(24, 32*i + 20)], fill=i+1)
 
 legendImage.save(targetObject + "_legend.gif")
