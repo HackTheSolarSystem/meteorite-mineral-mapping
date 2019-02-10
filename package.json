@@ -6,7 +6,9 @@
     "calibrate": "cd dataset && python ../src/calibrator/main.py",
     "calibrate-cuda": "cd dataset/standard && python ../../src/calibrator/main-cuda.py",
     "identify-obj1": "cd dataset && python ../src/identifier/main.py obj1", 
-    "identify-obj2": "cd dataset && python ../src/identifier/main.py obj2"
+    "identify-cuda-obj1": "cd dataset && python ../src/identifier/main-cuda.py obj1", 
+    "identify-obj2": "cd dataset && python ../src/identifier/main.py obj2",
+    "identify-cuda-obj2": "cd dataset && python ../src/identifier/main-cuda.py obj2"
   },
   "repository": {
     "type": "git",

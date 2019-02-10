@@ -15,7 +15,7 @@ There are two phases to the solution. Phase 1 is to create conversion factors wh
 
 For Phase 1, we created a program called [Calibrator](src/calibrator/main.py) which uses (1) [standards.json](dataset/standard/standards.json) and (2) data files in the [standard](dataset/standard) directory to calculate weight%-to-intensity conversion factor for each element. Standards are minerals with known exact compositions. For each standard, we applied mask for the standard onto the elements which are in the standard's chemical composition to get the number representing the element's intensity value. For each element of each standard the conversion factor is calculated from dividing the intensity value by the weight% of the element in the standard. We maintain a running average of the intensity values for every element as we iterate through all the standards. At the end of the program, a file called [calibration.json](dataset/calibration.json) is created which contains the mapping between element names and their weight%-to-intensity conversion factors.
 
-For Phase 2, we created a program called [Identifier](src/identifier/main.py) which uses (1) [calibration.json](dataset/calibration.json) (output of Phase 1), (2) [test-minerals.json](dataset/test-minerals.json) (minerals which we want to test for in the samples), and data files for the sample ([obj1](dataset/obj1) and [obj2](dataset/obj2)) to calculate (1) a mineral map, (2) a confidence map, and (3) mineral counts for the sample. For each element of each test mineral, we calculate the intensity value using the weight%-to-intensity conversion factor. Then we calculate the delta between the calculated intensity value and the intensity value of the sample at a given pixel for each element. We sum up the deltas for all the elements for each test mineral and we keep track of the smallest deltaSum as we compare all the test minerals against the sample. At the end of processing, we can deduce that the most likely mineral at a given pixel is the one with the smallest delta sum. The mineral map is created by color coding each pixel of the sample image with the color representing the test mineral. The confidence map is a gray scale calculated from the deltaSum of the chosen mineral at every pixel.
+For Phase 2, we created a program called [Identifier](src/identifier/main.py) which uses (1) [calibration.json](dataset/calibration.json) (output of Phase 1), (2) [test-minerals.json](dataset/test-minerals.json) (minerals which we want to test for in the samples), and data files for the sample ([obj1](dataset/obj1) and [obj2](dataset/obj2)) to calculate (1) a mineral map, (2) a confidence map, and (3) mineral counts for the sample. For each element of each test mineral, we calculate the intensity value using the weight%-to-intensity conversion factor. Then we calculate the delta between the calculated intensity value and the intensity value of the sample at a given pixel for each element. We sum up the deltas for all the elements for each test mineral and we keep track of the smallest deltaSum as we compare all the test minerals against the sample. At the end of processing, we can deduce that the most likely mineral at a given pixel is the one with the smallest delta sum. The mineral map is created by color coding each pixel of the sample image with the color representing the test mineral. The confidence map is a gray scale calculated from the deltaSum of the chosen mineral at every pixel. Mineral counts is basically a mapping of test mineral name to the number of pixels in the sample in which the mineral appears.
 
 #### Object 1
 
@@ -28,6 +28,10 @@ confidence
 
 ![Object 1 confidence](dataset/obj1_confidence.jpg)
 
+Mineral counts
+
+[obj1_mineralcounts.json](dataset/obj1_mineralcounts.json)
+
 #### Object 2
 
 mineral map
@@ -38,6 +42,8 @@ mineral map
 confidence
 
 ![Object 2 confidence](dataset/obj2_confidence.jpg)
+
+[obj2_mineral counts](dataset/obj2_mineralcounts.json)
 
 ### Installation Instructions
 
